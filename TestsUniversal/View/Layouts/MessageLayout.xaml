@@ -1,0 +1,32 @@
+﻿<UserControl x:Class="TestsUniversal.View.Layouts.MessageLayout"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:metro="http://metro.mahapps.com/winfx/xaml/controls"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             mc:Ignorable="d">
+    <UserControl.Resources>
+        <BooleanToVisibilityConverter x:Key="BoolToVisConverter" />
+    </UserControl.Resources>
+    <StackPanel Orientation="Vertical"
+                    HorizontalAlignment="Center">
+        <metro:ProgressRing Foreground="{DynamicResource AccentColorBrush}"
+                            IsActive="True"
+                            Visibility="{Binding IsProgress, Mode=OneWay, Converter={StaticResource BoolToVisConverter}}" />
+        <TextBlock TextAlignment="Center"
+                   TextWrapping="Wrap"
+                   Margin="20,0,20,0">
+                <Run FontSize="30" 
+                     FontWeight="Bold"
+                     Foreground="{DynamicResource AccentColorBrush}"
+                     Text="{Binding TextFirstLetter, Mode=OneWay}"/><Run FontSize="30" 
+                     FontWeight="Light"
+                     Text="{Binding TextWithoutFirstLetter, Mode=OneWay}"/>
+        </TextBlock>
+        <Button HorizontalAlignment="Center"
+                Margin="0,20,0,0"
+                Command="{Binding ButtonCommand, Mode=OneTime}"
+                Content="{Binding ButtonContent, Mode=OneTime}"
+                Visibility="{Binding HasButton, Mode=OneWay, Converter={StaticResource BoolToVisConverter}}" />
+    </StackPanel>
+</UserControl>

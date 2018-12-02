@@ -1,0 +1,177 @@
+﻿<metro:MetroWindow x:Class="TestsUniversal.View.MainWindow"
+                   xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                   xmlns:metro="http://metro.mahapps.com/winfx/xaml/controls"
+                   xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+                   xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                   xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+                   xmlns:windows="clr-namespace:TestsUniversal.View.Layouts"
+                   xmlns:themes="clr-namespace:TestsUniversal.ViewModel.Themes"
+                   xmlns:navigation="clr-namespace:TestsUniversal.ViewModel.Navigation"
+                   xmlns:i="http://schemas.microsoft.com/expression/2010/interactivity"
+                   mc:Ignorable="d"
+                   Title="Tests Universal"
+                   MinWidth="800"
+                   MinHeight="600"
+                   WindowStartupLocation="CenterScreen"
+                   TitleCaps="False" 
+                   TitlebarHeight="35" 
+                   Closed="AppClosed">
+    <metro:MetroWindow.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="pack://application:,,,/View/Icons.xaml" />
+            </ResourceDictionary.MergedDictionaries>
+            <themes:ThemeWorkerViewModel x:Key="ThemeWorker"/>
+            <ObjectDataProvider x:Key="NavigationWorker"
+                                ObjectInstance="{x:Static navigation:NavigationWorker.Instance}"
+                                MethodName="Initialize">
+                <ObjectDataProvider.MethodParameters>
+                    <navigation:NavigationDictionary>
+                        <windows:StartupLayout x:Key="{x:Static navigation:Layout.StartupLayout}" />
+                        <windows:ExamTaskSolvingLayout x:Key="{x:Static navigation:Layout.TaskSolvingLayout}" />
+                        <windows:TaskSolveResultLayout x:Key="{x:Static navigation:Layout.TaskResultLayout}" />
+                    </navigation:NavigationDictionary>
+                    <x:Static Member="navigation:Layout.StartupLayout" />
+                </ObjectDataProvider.MethodParameters>
+            </ObjectDataProvider>
+        </ResourceDictionary>
+    </metro:MetroWindow.Resources>
+    <!-- Dispose-->
+    <i:Interaction.Triggers>
+        <i:EventTrigger EventName="Closed">
+            <i:InvokeCommandAction Command="{Binding DisposeLogger, Mode=OneTime}" />
+        </i:EventTrigger>
+    </i:Interaction.Triggers>
+    <!-- Dispose-->
+    <!-- Icon -->
+    <metro:MetroWindow.IconTemplate>
+        <DataTemplate>
+            <Image Source="{TemplateBinding Content}"
+                   Margin="2"/>
+        </DataTemplate>
+    </metro:MetroWindow.IconTemplate>
+    <metro:MetroWindow.Icon>
+        <StaticResource ResourceKey="AppIcon"/>
+    </metro:MetroWindow.Icon>
+    <!-- Icon -->
+    <!-- Theme Changer -->
+    <metro:MetroWindow.RightWindowCommands>
+        <metro:WindowCommands>
+            <Button>
+                <i:Interaction.Triggers>
+                    <i:EventTrigger EventName="Click">
+                        <i:InvokeCommandAction Command="{Binding Source={StaticResource ThemeWorker}, Path=ToggleThemeChangeFlyout, Mode=OneTime}"/>
+                    </i:EventTrigger>
+                </i:Interaction.Triggers>
+                <StackPanel Orientation="Horizontal">
+                    <Image Source="{StaticResource ChangeThemeIcon}" />
+                    <TextBlock Margin="4 0 0 0"
+                               VerticalAlignment="Center"
+                               Text="цветовая тема"/>
+                </StackPanel>
+            </Button>
+        </metro:WindowCommands>
+    </metro:MetroWindow.RightWindowCommands>
+    <metro:MetroWindow.Flyouts>
+        <metro:FlyoutsControl>
+            <metro:Flyout DataContext="{StaticResource ThemeWorker}"
+                          IsOpen="{Binding Path=ThemeChangeFlyoutOpened, Mode=TwoWay}"
+                          Position="Right"
+                          Header="Изменение темы" 
+                          Theme="Adapt"
+                          IsPinned="False"
+                          CloseButtonVisibility="Visible">
+                <metro:Flyout.Resources>
+                    <ResourceDictionary>
+                        <Rectangle x:Key="ThemesMenuIcon"
+                                   Width="16"
+                                   Height="16"
+                                   Fill="{Binding Brush, Mode=OneTime}"
+                                   x:Shared="False"/>
+                        <Style x:Key="AppThemeMenuItemStyle"
+                               BasedOn="{StaticResource {x:Type MenuItem}}"
+                               TargetType="{x:Type MenuItem}">
+                            <Setter Property="Header" 
+                                    Value="{Binding Name, Mode=OneTime}"/>
+                            <Setter Property="Icon" 
+                                    Value="{StaticResource ThemesMenuIcon}"/>
+                            <Setter Property="Command"
+                                    Value="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type metro:DropDownButton}}, Path=DataContext.ChangeThemeCommand, Mode=OneTime}"/>
+                            <Setter Property="CommandParameter"
+                                    Value="{Binding Path=Name, Mode=OneTime}"/>
+                        </Style>
+                        <Style x:Key="AccentColorMenuItemStyle"             
+                               BasedOn="{StaticResource {x:Type MenuItem}}"
+                               TargetType="{x:Type MenuItem}">
+                            <Setter Property="Header" 
+                                    Value="{Binding Name, Mode=OneTime}"/>
+                            <Setter Property="Icon"
+                                    Value="{StaticResource ThemesMenuIcon}"/>
+                            <Setter Property="Command"
+                                    Value="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type metro:DropDownButton}}, Path=DataContext.ChangeAccentCommand, Mode=OneTime}"/>
+                            <Setter Property="CommandParameter"
+                                    Value="{Binding Path=Name, Mode=OneTime}"/>
+                        </Style>
+                    </ResourceDictionary>
+                </metro:Flyout.Resources>
+
+                <metro:Flyout.HeaderTemplate>
+                    <DataTemplate>
+                        <TextBlock Text="{TemplateBinding Content}"
+                                   HorizontalAlignment="Center"/>
+                    </DataTemplate>
+                </metro:Flyout.HeaderTemplate>
+                <StackPanel Orientation="Vertical">
+                    <metro:DropDownButton Content="Акцент"
+                                          ItemContainerStyle="{StaticResource AccentColorMenuItemStyle}"
+                                          ItemsSource="{Binding AvailableAccents, Mode=OneWay}"
+                                          Margin="15"
+                                          BorderThickness="0"
+                                          Orientation="Vertical">
+                        <metro:DropDownButton.Icon>
+                            <Rectangle Width="80"
+                                       Height="40"
+                                       Fill="{DynamicResource AccentColorBrush}"
+                                       Stroke="{DynamicResource BlackColorBrush}"
+                                       StrokeThickness="1"/>
+                        </metro:DropDownButton.Icon>
+                    </metro:DropDownButton>
+                    <metro:DropDownButton Content="Тема"
+                                          ItemContainerStyle="{StaticResource AppThemeMenuItemStyle}"
+                                          ItemsSource="{Binding AvailableAppThemes, Mode=OneWay}"
+                                          Margin="15"
+                                          BorderThickness="0" 
+                                          Orientation="Vertical">
+                        <metro:DropDownButton.Icon>
+                            <Rectangle Width="80"
+                                       Height="40"
+                                       Fill="{DynamicResource WhiteColorBrush}"
+                                       Stroke="{DynamicResource BlackColorBrush}"
+                                       StrokeThickness="1"/>
+                        </metro:DropDownButton.Icon>
+                    </metro:DropDownButton>
+                </StackPanel>
+            </metro:Flyout>
+        </metro:FlyoutsControl>
+    </metro:MetroWindow.Flyouts>
+    <!-- Theme Changer -->
+    <DockPanel>
+        <!-- Menu -->
+        <!--
+        <Menu DockPanel.Dock="Top"
+              Margin="1"
+              Grid.Column="0"
+              Grid.ColumnSpan="2">
+            <MenuItem Header="Hi, All"
+                      HorizontalAlignment="Left">Just Normal Item</MenuItem>
+        </Menu>
+        
+        -->
+        <!-- Menu -->
+        <!-- Main Content -->
+
+        <metro:TransitioningContentControl Transition="Default"
+                                           Content="{Binding Source={StaticResource NavigationWorker}, Path=CurrentLayout}"/>
+        <!-- Main Content -->
+    </DockPanel>
+</metro:MetroWindow>
